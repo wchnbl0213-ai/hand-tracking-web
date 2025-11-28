@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>摄像头实时互动：3D 原子网格</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #000; 
+            font-family: sans-serif;
+            color: white;
+        }
+        
+        /* ------------------------------------------- */
+        /* 1. 摄像头/Canvas 容器：左下角，小尺寸 */
+        /* ------------------------------------------- */
+        .container { 
+            position: fixed; /* 固定在视口 */
+            bottom: 20px; /* 左下角定位 */
+            left: 20px;
+            width: 320px; /* 减小尺寸 */
+            height: 240px; /* 减小尺寸 */
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); 
+            border-radius: 8px; 
+            overflow: hidden; 
+            background: rgba(0,0,0,0.5); 
+            z-index: 10;
+        }
+        
+        #webcam { 
+            display: block; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            transform: scaleX(-1);
+        }
+        
+        #canvas { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            transform: scaleX(-1);
+        }
+        
+        /* 状态显示区 */
+        #action-status { 
+            position: absolute; 
+            bottom: 5px; /* 调整位置避免遮挡 */
+            left: 5px; 
+            background: rgba(0, 0, 0, 0.7); 
+            color: white; 
+            padding: 5px 10px; 
+            border-radius: 4px; 
+            font-size: 0.8em;
+            z-index: 11;
+        }
+
+        /* Three.js 容器 (全屏背景) */
+        #three-container {
+            position: fixed; 
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1; 
+            background: linear-gradient(45deg, #000000, #1a0033);
+        }
+        
+        /* 说明区移到右上角，避免和摄像头冲突 */
+        #instructions {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #aaa;
+            text-align: right;
+            line-height: 1.5;
+            z-index: 10;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        #instructions h2 {
+            margin-top: 0;
+            color: #00FFFF;
+        }
+    </style>
+    
+    
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.min.js"></script>
+
+    
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.155.0/three.min.js"></script> 
+</head>
+<body>
+
+<div id="three-container"></div> 
+
+<div class="main-content">
+    <div class="container">
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+        <div id="action-status">等待摄像头启动...</div>
+    </div>
+</div>
+
+<div id="instructions">
+    <h2>手势互动说明：</h2>
+    <p>👊 **握拳 (Fist)**：所有手指收拢 &rarr; **原子网格收缩**。</p>
+    <p>👐 **张开手掌 (Open)**：所有手指伸开 &rarr; **原子网格扩散**。</p>
+</div>
+
+<script src="app.js"></script> 
+
+</body>
+</html>
