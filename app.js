@@ -19,25 +19,22 @@ window.onload = function() {
     // --- MediaPipe 跟踪变量 ---
     let lastHandX = null;
     let lastHandY = null;
-    // 增加晃动幅度: 提高手势灵敏度
-    const rotationSpeedFactor = 0.1; // NEW: 提高到 0.1
-    
+    const rotationSpeedFactor = 0.1; // 手势移动到旋转的敏感度 (晃动幅度大)
+
     // 惯性旋转相关变量
     let rotationVelocityX = 0; 
     let rotationVelocityY = 0; 
-    // 增加晃动幅度: 提高摩擦力(衰减更慢)
-    const friction = 0.96;      // NEW: 提高到 0.96
-    // 增加晃动幅度: 提高最大速度
-    const maxRotationVelocity = 0.1; // NEW: 提高到 0.1
+    const friction = 0.96;      // 摩擦力/衰减因子 (晃动持续时间长)
+    const maxRotationVelocity = 0.1; // 最大旋转速度
 
-    // --- Three.js 变量 ---
+    // --- Three.js 变量 (性能优化调整) ---
     let camera, scene, renderer; 
     let particles = [];
     let linesMesh; // 用于存放所有连接线的 LineSegments 对象
     
-    const particleCount = 200;
+    const particleCount = 100; // <<< NEW: 粒子数量减半，减轻手机负担
     const particleRadius = 0.3; 
-    const connectionDistance = 8; 
+    const connectionDistance = 5; // <<< NEW: 缩小连线距离，减少绘制的线条数量
     const sphereRadius = 20; // 扩散时的球形结构半径
     const contractRadius = 5; // 收缩时的球形结构半径，保持缝隙
     const smoothFactor = 0.08; // Lerp 平滑因子
@@ -54,7 +51,7 @@ window.onload = function() {
     // 粒子和连线的颜色常量
     const particleColor = new THREE.Color(0x0000FF); // 蓝色粒子
     const lineColor = new THREE.Color(0x00FF00);   // 绿色连线
-    const baseColor = lineColor; // 将baseColor指向新的绿色连线颜色
+    const baseColor = lineColor; 
 
     // --- 初始化 Three.js 场景 ---
     function initThreeJS() {
@@ -71,7 +68,7 @@ window.onload = function() {
         
         // 1. 创建粒子 (原子)
         const particleGeometry = new THREE.SphereGeometry(particleRadius, 16, 16); 
-        const particleMaterial = new THREE.MeshBasicMaterial({ color: particleColor }); // 使用蓝色粒子颜色
+        const particleMaterial = new THREE.MeshBasicMaterial({ color: particleColor }); 
         
         for (let i = 0; i < particleCount; i++) {
             const particle = new THREE.Mesh(particleGeometry, particleMaterial);
@@ -147,6 +144,7 @@ window.onload = function() {
                 const dz = p1.z - p2.z;
                 const distSq = dx * dx + dy * dy + dz * dz;
 
+                // 只有距离小于 connectionDistance 时才绘制
                 if (distSq < connectionDistance * connectionDistance) {
                     
                     // 顶点 1 (3个分量)
